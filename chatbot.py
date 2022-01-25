@@ -1,13 +1,11 @@
 import os
 from twitchio.ext import commands
-import configparser
+from config import config
 
-config = configparser.ConfigParser()
+from wled_api import changeColor, turnOff, turnOn
 
 class Bot(commands.Bot):
     def __init__(self):
-            global config
-            config.read('config.ini')
             mytoken = config['STREAM']['Access_Token']
             client = config['STREAM']['Client_ID']
             nickname = config['STREAM']['Nickname']
@@ -15,7 +13,7 @@ class Bot(commands.Bot):
             channel = config['STREAM']['Channel']
 
             # Initialise our Bot with our access token, prefix and a list of channels to join on boot...
-            super().__init__(token=mytoken, client_id=client, nick=nickname, prefix=pre,
+            super().__init__(token=mytoken, client_id=client, prefix=pre,
                          initial_channels=[channel])
 
     async def event_ready(self):
@@ -30,11 +28,12 @@ class Bot(commands.Bot):
             return
         if message.author.name.lower() == config['STREAM']['Channel'].lower():
             return
-        # get author name
-        chatterName = str(message.author.name)
 
         # checks if any defined command matches @bot.command()
         await bot.handle_commands(message)
+            
+        # get author name
+        chatterName = str(message.author.name)
 
         # if someone use hello in their message, greet back
         if 'hello' in message.content.lower():
@@ -42,11 +41,23 @@ class Bot(commands.Bot):
             await message.channel.send(f"Hi, @{chatterName}!")
 
 
-    # new command with name 'test'
-    # prefix in env
-    @commands.command(name='test')
-    async def test(ctx):
-        await ctx.send('test passed!')
+    # new command with name 'color'
+    @commands.command(name='color')
+    async def color(self, bot: commands.Context, arg):
+        await changeColor(arg)
+        # await bot.send('test passed!')
+
+    # new command with name 'on'
+    @commands.command(name='on')
+    async def on(self, bot: commands.Context):
+        await turnOn()
+        await bot.send('WLED turned on!')
+
+    # new command with name 'off'
+    @commands.command(name='off')
+    async def off(self, bot: commands.Context):
+        await turnOff()
+        await bot.send('WLED turned off!')
 
 bot = Bot()
 bot.run()
