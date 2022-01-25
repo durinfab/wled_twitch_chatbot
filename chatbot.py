@@ -8,7 +8,6 @@ class Bot(commands.Bot):
     def __init__(self):
             mytoken = config['STREAM']['Access_Token']
             client = config['STREAM']['Client_ID']
-            nickname = config['STREAM']['Nickname']
             pre = config['STREAM']['Prefix']
             channel = config['STREAM']['Channel']
 
@@ -18,7 +17,7 @@ class Bot(commands.Bot):
 
     async def event_ready(self):
         'Called once when the bot goes online.'
-        print(f"{config['STREAM']['Nickname']} is online!")
+        print("Bot is ready!")
 
     async def event_message(self, message):
         'Runs every time a message is sent in chat.'
@@ -44,20 +43,17 @@ class Bot(commands.Bot):
     # new command with name 'color'
     @commands.command(name='color')
     async def color(self, bot: commands.Context, arg):
-        await changeColor(arg)
-        # await bot.send('test passed!')
+        await changeColor(bot, arg)
 
     # new command with name 'on'
     @commands.command(name='on')
     async def on(self, bot: commands.Context):
-        await turnOn()
-        await bot.send('WLED turned on!')
+        await turnOn(bot)
 
     # new command with name 'off'
     @commands.command(name='off')
     async def off(self, bot: commands.Context):
-        await turnOff()
-        await bot.send('WLED turned off!')
+        await turnOff(bot)
 
 bot = Bot()
 bot.run()
