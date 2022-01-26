@@ -1,6 +1,7 @@
 import os
 from twitchio.ext import commands
 from config import config
+from eventbot import startEventBot
 
 from wled_api import changeColor, turnOff, turnOn
 
@@ -56,4 +57,5 @@ class Bot(commands.Bot):
         await turnOff(bot)
 
 bot = Bot()
+startEventBot()
 bot.run()
